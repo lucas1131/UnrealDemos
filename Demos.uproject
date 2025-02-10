@@ -8,18 +8,20 @@
 			"Name": "Demos",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
+			"AdditionalDependencies": [ "Engine" ]
+		},
+		{
+			"Name": "WeatherSystem",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [ "Engine" ]
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "ModelingToolsEditorMode",
 			"Enabled": true,
-			"TargetAllowList": [
-				"Editor"
-			]
+			"TargetAllowList": [ "Editor" ]
 		}
 	]
 }
