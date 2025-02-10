@@ -15,6 +15,12 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [ "Engine" ]
+		},
+		{
+			"Name": "Interactable",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [ "Engine" ]
 		}
 	],
 	"Plugins": [
