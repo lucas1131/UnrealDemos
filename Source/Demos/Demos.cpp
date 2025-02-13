@@ -3,4 +3,4 @@
 #include "Demos.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Demos, "Demos" );
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, Demos, "Demos");

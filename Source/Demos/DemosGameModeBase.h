@@ -13,5 +13,4 @@ UCLASS()
 class DEMOS_API ADemosGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
 };

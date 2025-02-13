@@ -8,8 +8,8 @@
 #include "TimeOfDay.h"
 #include "InGameTimeController.generated.h"
 
-UCLASS()
-class DEMOS_API AInGameTimeController : public AActor
+UCLASS(ClassGroup=(WeatherSystem), meta=(BlueprintSpawnableComponent))
+class WEATHERSYSTEM_API AInGameTimeController : public AActor
 {
 	GENERATED_BODY()
 
@@ -24,6 +24,8 @@ protected:
 	ETimeOfDay TimeOfDay;
 
 private:
+	float TickDeltaTime;
+
 	UPROPERTY(EditAnywhere)
 	ADirectionalLight* SunLight;
 	UPROPERTY(EditAnywhere)
@@ -73,6 +75,11 @@ public:
 	float GetCurrentTime() const { return CurrentTimeSeconds; }
 
 	UFUNCTION(BlueprintCallable)
+	float GetInGameDeltaTime() const { return CycleSpeed * TickDeltaTime * !IsPaused; }
+
+	// If paused, delta time should always be 0
+
+	UFUNCTION(BlueprintCallable)
 	bool IsTimePaused() const
 	{
 		return IsPaused;
@@ -92,6 +99,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateDayNightCycle();
+
 private:
 	void UpdateSunPosition(float Angle) const;
 	void UpdateMoonPosition(float Angle) const;

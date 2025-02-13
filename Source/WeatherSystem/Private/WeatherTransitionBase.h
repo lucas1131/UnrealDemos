@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 
-class DEMOS_API WeatherTransitionBase
+class WEATHERSYSTEM_API WeatherTransitionBase
 {
 public:
 	UMaterialParameterCollectionInstance* GlobalMaterialParamsInstance;

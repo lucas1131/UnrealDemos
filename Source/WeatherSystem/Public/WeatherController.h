@@ -9,10 +9,12 @@
 #include "Weather.h"
 #include "WeatherData.h"
 #include "InGameTimeController.h"
+#include "NiagaraComponent.h"
+#include "Engine/ExponentialHeightFog.h"
 #include "WeatherController.generated.h"
 
-UCLASS()
-class DEMOS_API AWeatherController : public AActor
+UCLASS(ClassGroup=(WeatherSystem), meta=(BlueprintSpawnableComponent))
+class WEATHERSYSTEM_API AWeatherController : public AActor
 {
 	GENERATED_BODY()
 
@@ -41,6 +43,14 @@ protected:
 	UMaterialParameterCollection* GlobalMaterialParams = nullptr;
 	UPROPERTY()
 	UMaterialParameterCollectionInstance* GlobalMaterialParamsInstance = nullptr;
+	UPROPERTY(EditAnywhere)
+	AExponentialHeightFog* AmbientFog = nullptr;
+	UPROPERTY(EditAnywhere)
+	ADirectionalLight* SunLight = nullptr;
+	UPROPERTY(EditAnywhere)
+	ADirectionalLight* MoonLight = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UNiagaraComponent* Particles = nullptr;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -48,6 +58,7 @@ private:
 	float CurrentTransitionTime = 0;
 
 	WeatherTransitionBase* CurrentTransition = nullptr;
+	WeatherTransitionBase* PreviousTransition = nullptr;
 
 	////////////
 	// Methods

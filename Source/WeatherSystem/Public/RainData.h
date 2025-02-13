@@ -3,15 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/TimelineComponent.h"
 #include "Engine/DataAsset.h"
 #include "RainData.generated.h"
 
 /**
  *
  */
-UCLASS(BlueprintType, Blueprintable)
-class DEMOS_API URainData : public UDataAsset
+UCLASS(BlueprintType, Blueprintable, ClassGroup=(WeatherSystem))
+class WEATHERSYSTEM_API URainData : public UDataAsset
 {
 	GENERATED_BODY()
 
@@ -24,4 +23,12 @@ public:
 	TObjectPtr<UCurveFloat> PuddleSize;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UCurveFloat> WindIntensity;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UCurveFloat> FogDensity;
+	UPROPERTY(EditAnywhere)
+	FColor FogColor;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UCurveFloat> LightReductionPercentage;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UCurveFloat> ParticleEffects;
 };

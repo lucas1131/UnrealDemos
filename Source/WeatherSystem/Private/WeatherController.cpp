@@ -36,12 +36,17 @@ void AWeatherController::ProcessWeatherState()
 
 WeatherTransitionBase* AWeatherController::GetWeatherTransitionObject(EWeather Weather)
 {
-	// TODO save current transition to previous before deleting so we can blend between any two weathers
-	if (CurrentTransition != nullptr)
+	if (CurrentWeather == Weather)
 	{
-		delete CurrentTransition;
-		CurrentTransition = nullptr;
+		return CurrentTransition;
 	}
+
+	// TODO save current transition to previous before deleting so we can blend between any two weathers
+	if (PreviousTransition != nullptr)
+	{
+		// delete PreviousTransition;
+	}
+	PreviousTransition = CurrentTransition;
 
 	switch (CurrentWeather)
 	{
@@ -49,23 +54,13 @@ WeatherTransitionBase* AWeatherController::GetWeatherTransitionObject(EWeather W
 		// should use cached transition object with reverse alpha
 		// return CurrentTransition;
 		return nullptr;
-	case EWeather::Cloudy:
-		return nullptr;
 	case EWeather::Rain:
-		CurrentTransition = new RainTransition(static_cast<URainData*>(WeatherData->Params[EWeather::Rain]),
-		                                       GlobalMaterialParamsInstance);
-		return CurrentTransition;
 	case EWeather::HeavyRain:
-		return nullptr;
-	case EWeather::Snow:
-		return nullptr;
-	case EWeather::Blizzard:
-		return nullptr;
-	case EWeather::Heatwave:
-		return nullptr;
-	case EWeather::Sandstorm:
-		return nullptr;
-
+		CurrentTransition = new RainTransition(
+			static_cast<URainData*>(WeatherData->Params[CurrentWeather]),
+			GlobalMaterialParamsInstance,
+			AmbientFog->GetComponent(), SunLight, MoonLight, Particles);
+		return CurrentTransition;
 	default:
 		UE_LOG(LogTemp, Warning, TEXT("Unknown weather enum value %d"), (int)Weather);
 		return nullptr;
@@ -112,8 +107,6 @@ void AWeatherController::TransitionToWeather(const EWeather Weather, const float
 			TransitionAlpha = 1.0f - TransitionAlpha;
 		}
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,
-		                                 FString::Printf(TEXT("Transition Alpha: %f"), TransitionAlpha));
 		CurrentTransition->TransitionWeather(TransitionAlpha);
 	}
 }

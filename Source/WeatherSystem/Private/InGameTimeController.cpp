@@ -65,13 +65,17 @@ void AInGameTimeController::Setup(const float StartTime, const bool bPaused)
 void AInGameTimeController::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (IsPaused) return;
-	
+	if (IsPaused)
+	{
+		return;
+	}
+
 	// current time [0, 24) h
 	// current time [0, 1440) m
 	// current time [0, 86400) s
 	// angle / s = 0.00416666666
 	CurrentTimeSeconds += DeltaTime * CycleSpeed;
+	this->TickDeltaTime = DeltaTime;
 	UpdateDayNightCycle();
 }
 
@@ -101,24 +105,25 @@ void AInGameTimeController::UpdateDayNightCycle()
 	 */
 
 	const float DayDuration = NightTimeSeconds - SunriseTimeSeconds;
-	const float NightDuration = TotalDayTime - NightTimeSeconds + SunriseTimeSeconds; // Time wraps to 0 at midnight, be careful
-	
+	const float NightDuration = TotalDayTime - NightTimeSeconds + SunriseTimeSeconds;
+	// Time wraps to 0 at midnight, be careful
+
 	float ModifiedAngle;
 	if (CurrentTimeSeconds > NightTimeSeconds)
 	{
 		// Between sunset end and midnight
-		ModifiedAngle = FMath::Lerp(0.0, 90.0, (CurrentTimeSeconds - NightTimeSeconds)/(NightDuration/2.0));
+		ModifiedAngle = FMath::Lerp(0.0, 90.0, (CurrentTimeSeconds - NightTimeSeconds) / (NightDuration / 2.0));
 	}
 	else if (CurrentTimeSeconds > SunriseTimeSeconds)
 	{
 		// Between sunrise start sunset end
-		ModifiedAngle = FMath::Lerp(180.0, 360.0, (CurrentTimeSeconds - SunriseTimeSeconds)/DayDuration);
+		ModifiedAngle = FMath::Lerp(180.0, 360.0, (CurrentTimeSeconds - SunriseTimeSeconds) / DayDuration);
 	}
 	else
 	{
-		ModifiedAngle = FMath::Lerp(90, 180.0, CurrentTimeSeconds/(NightDuration/2.0));
+		ModifiedAngle = FMath::Lerp(90, 180.0, CurrentTimeSeconds / (NightDuration / 2.0));
 	}
-	
+
 	UpdateSunPosition(ModifiedAngle);
 	UpdateMoonPosition(ModifiedAngle);
 	UpdateTimeOfDayTransitions();
@@ -126,13 +131,23 @@ void AInGameTimeController::UpdateDayNightCycle()
 
 void AInGameTimeController::UpdateSunPosition(const float Angle) const
 {
+	if (SunLight == nullptr)
+	{
+		return;
+	}
+
 	const FRotator Rotator = {Angle, 180.0, 180.0};
 	SunLight->SetActorRotation(Rotator);
 }
 
 void AInGameTimeController::UpdateMoonPosition(const float Angle) const
 {
-	const FRotator Rotator = {Angle+180, 180.0, 180.0};
+	if (MoonLight == nullptr)
+	{
+		return;
+	}
+
+	const FRotator Rotator = {Angle + 180, 180.0, 180.0};
 	MoonLight->SetActorRotation(Rotator);
 }
 
@@ -189,14 +204,8 @@ void AInGameTimeController::UpdateSunsetTransition() const
 
 void AInGameTimeController::SetDayNightTransitionValue(const float Alpha) const
 {
-	GEngine->AddOnScreenDebugMessage(
-		-1,
-		5.0f,
-		FColor::Red,
-		FString::Printf(TEXT("Skybox transition alpha: %f"), Alpha));
-	checkf(SkyDomeMaterial != nullptr, TEXT("SkyDome is null"));
+	checkf(SkyDomeMaterial != nullptr, TEXT("SkyDomeMaterial is null"));
 	SkyDomeMaterial->SetScalarParameterValue(FName("DayNightTransition"), Alpha);
-
 }
 
 #if WITH_EDITOR
@@ -209,6 +218,11 @@ void AInGameTimeController::PostEditChangeProperty(FPropertyChangedEvent& e)
 	const FName PropertyName = (e.Property != nullptr) ? e.Property->GetFName() : NAME_None;
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(AInGameTimeController, CurrentTimeSeconds))
 	{
+		if (SkyDomeMaterial == nullptr)
+		{
+			Setup(CurrentTimeSeconds, false);
+		}
+
 		UpdateDayNightCycle();
 	}
 }
