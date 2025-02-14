@@ -6,8 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "InteractableComponent.generated.h"
 
-
-UCLASS(ClassGroup=(InteractableSystem), meta=(BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup=(InteractableSystem), meta=(BlueprintSpawnableComponent))
 class INTERACTABLE_API UInteractableComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -47,10 +46,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeactivateInteractionOutline() const;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnBeginInteraction(AActor* Interactor) const;
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnEndInteraction(AActor* Interactor) const;
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnBeginInteraction"))
+	void ReceiveOnBeginInteraction(AActor* Interactor);
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnEndInteraction"))
+	void ReceiveOnEndInteraction(AActor* Interactor);
 
 protected:
 	virtual void BeginPlay() override;

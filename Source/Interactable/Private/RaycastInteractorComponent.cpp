@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "RaycastInteractorComponent.h"
-
 #include "InteractableComponent.h"
 
 void DebugPrint(const URaycastInteractorComponent* Caller, const FColor Color, const FString& Message)
@@ -49,36 +47,35 @@ void URaycastInteractorComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	DoInteractionTest();
 }
 
-void URaycastInteractorComponent::UpdateCachedInteractable(const UInteractableComponent* InteractableComponent)
+void URaycastInteractorComponent::UpdateCachedInteractable(UInteractableComponent* InteractableComponent)
 {
 	if (CurrentInteractable == InteractableComponent)
 	{
 		return;
 	}
-	
-	if (CurrentInteractable != nullptr)
-	{
-		CleanupCachedInteractable();
+
+	if (InteractableComponent == nullptr){
+		OnInteractableUpdated.Execute(nullptr);
+		CurrentInteractable->DeactivateInteractionOutline();
+		CurrentInteractable = nullptr;
+		return;
 	}
 	
-	CurrentInteractable = InteractableComponent;
-	CurrentInteractable->ActivateInteractionOutline();
-}
-
-void URaycastInteractorComponent::CleanupCachedInteractable()
-{
 	if (CurrentInteractable != nullptr)
 	{
 		CurrentInteractable->DeactivateInteractionOutline();
-		CurrentInteractable = nullptr;
 	}
+
+	CurrentInteractable = InteractableComponent;
+	CurrentInteractable->ActivateInteractionOutline();
+	OnInteractableUpdated.Execute(InteractableComponent);
 }
 
 void URaycastInteractorComponent::DoInteractionTest()
 {
 	if (bIsInteracting)
 	{
-		return;
+		return; 
 	}
 
 	FHitResult Result;
@@ -109,11 +106,12 @@ void URaycastInteractorComponent::DoInteractionTest()
 			return;
 		}
 
-		const UInteractableComponent* InteractableComponent = HitActor->GetComponentByClass<UInteractableComponent>();
+		UInteractableComponent* InteractableComponent = HitActor->GetComponentByClass<UInteractableComponent>();
 		if (InteractableComponent == nullptr)
 		{
-			CleanupCachedInteractable();
-			DebugPrint(this, FColor::Orange, FString::Printf(TEXT("Hit non interactable actor: %s"), *HitActor->GetName()));
+			UpdateCachedInteractable(nullptr);
+			DebugPrint(this, FColor::Orange,
+			           FString::Printf(TEXT("Hit non interactable actor: %s"), *HitActor->GetName()));
 			return;
 		}
 
@@ -122,7 +120,7 @@ void URaycastInteractorComponent::DoInteractionTest()
 	}
 	else
 	{
-		CleanupCachedInteractable();
+		UpdateCachedInteractable(nullptr);
 		DebugPrint(this, FColor::Red, TEXT("No hits"));
 	}
 }
@@ -131,7 +129,7 @@ bool URaycastInteractorComponent::TryBeginInteraction()
 {
 	if (CurrentInteractable != nullptr && CurrentInteractable->CanInteract())
 	{
-		CurrentInteractable->OnBeginInteraction(GetOwner());
+		CurrentInteractable->ReceiveOnBeginInteraction(GetOwner());
 		bIsInteracting = true;
 		return true;
 	}
@@ -143,7 +141,7 @@ bool URaycastInteractorComponent::TryEndInteraction()
 {
 	if (CurrentInteractable != nullptr && CurrentInteractable->CanInteract())
 	{
-		CurrentInteractable->OnEndInteraction(GetOwner());
+		CurrentInteractable->ReceiveOnEndInteraction(GetOwner());
 		bIsInteracting = false;
 		return true;
 	}
@@ -156,4 +154,3 @@ void URaycastInteractorComponent::SetRaycastCamera(UCameraComponent* InCamera)
 	this->Camera = InCamera;
 	PrimaryComponentTick.bCanEverTick = this->Camera != nullptr;
 }
-

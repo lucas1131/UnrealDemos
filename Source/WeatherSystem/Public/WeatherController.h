@@ -13,7 +13,7 @@
 #include "Engine/ExponentialHeightFog.h"
 #include "WeatherController.generated.h"
 
-UCLASS(ClassGroup=(WeatherSystem), meta=(BlueprintSpawnableComponent))
+UCLASS(BlueprintType, ClassGroup=(WeatherSystem), meta=(BlueprintSpawnableComponent))
 class WEATHERSYSTEM_API AWeatherController : public AActor
 {
 	GENERATED_BODY()

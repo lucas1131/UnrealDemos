@@ -8,6 +8,8 @@
 #include "Components/ActorComponent.h"
 #include "RaycastInteractorComponent.generated.h"
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnInteractableUpdatedSignature, UInteractableComponent*, InteractableComponent);
+
 UCLASS(ClassGroup=(InteractableSystem), meta=(BlueprintSpawnableComponent))
 class INTERACTABLE_API URaycastInteractorComponent : public UActorComponent
 {
@@ -24,10 +26,13 @@ protected:
 	float InteractionDistance = 500.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsInteracting;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FOnInteractableUpdatedSignature OnInteractableUpdated;
 
 private:
 	UPROPERTY()
-	const UInteractableComponent* CurrentInteractable;
+	UInteractableComponent* CurrentInteractable;
 
 public:
 	URaycastInteractorComponent();
@@ -42,6 +47,6 @@ protected:
 
 private:
 	void DoInteractionTest();
-	void UpdateCachedInteractable(const UInteractableComponent* InteractableComponent);
+	void UpdateCachedInteractable(UInteractableComponent* InteractableComponent);
 	void CleanupCachedInteractable();
 };

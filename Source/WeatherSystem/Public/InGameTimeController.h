@@ -8,7 +8,7 @@
 #include "TimeOfDay.h"
 #include "InGameTimeController.generated.h"
 
-UCLASS(ClassGroup=(WeatherSystem), meta=(BlueprintSpawnableComponent))
+UCLASS(BlueprintType, ClassGroup=(WeatherSystem), meta=(BlueprintSpawnableComponent))
 class WEATHERSYSTEM_API AInGameTimeController : public AActor
 {
 	GENERATED_BODY()
