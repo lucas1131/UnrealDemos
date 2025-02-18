@@ -3,15 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IInteractorInterface.h"
 #include "InteractableComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ActorComponent.h"
 #include "RaycastInteractorComponent.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnInteractableUpdatedSignature, UInteractableComponent*, InteractableComponent);
-
 UCLASS(ClassGroup=(InteractableSystem), meta=(BlueprintSpawnableComponent))
-class INTERACTABLE_API URaycastInteractorComponent : public UActorComponent
+class INTERACTABLE_API URaycastInteractorComponent : public UActorComponent, public IInteractorInterface
 {
 	GENERATED_BODY()
 
@@ -23,10 +22,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UCameraComponent* Camera;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InteractionDistance = 500.0f;
+	float InteractionRaycastDistance = 200.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float InteractionDistance = 150.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsInteracting;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FOnInteractableUpdatedSignature OnInteractableUpdated;
 
@@ -38,9 +39,21 @@ public:
 	URaycastInteractorComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+	UFUNCTION(BlueprintCallable)
 	void SetRaycastCamera(UCameraComponent* InCamera);
-	bool TryBeginInteraction();
-	bool TryEndInteraction();
+	UFUNCTION(BlueprintCallable)
+	UInteractableComponent* GetCurrentInteractableComponent() const { return CurrentInteractable; }
+
+	/* IInteractable */
+	UFUNCTION(BlueprintCallable)
+	virtual bool TryBeginInteraction() override;
+	UFUNCTION(BlueprintCallable)
+	virtual bool TryEndInteraction() override;
+	UFUNCTION(BlueprintCallable)
+	virtual void BindOnInteractableUpdatedEvent(const FOnInteractableUpdatedSignature& Callback) override;
+	UFUNCTION(BlueprintCallable)
+	virtual float GetInteractionDistance() override { return InteractionDistance; }
+	/* End IInteractable */
 
 protected:
 	virtual void BeginPlay() override;
@@ -48,5 +61,4 @@ protected:
 private:
 	void DoInteractionTest();
 	void UpdateCachedInteractable(UInteractableComponent* InteractableComponent);
-	void CleanupCachedInteractable();
 };

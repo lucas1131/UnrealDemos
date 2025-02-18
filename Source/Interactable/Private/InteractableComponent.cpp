@@ -8,6 +8,7 @@ UInteractableComponent::UInteractableComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	bCanInteract = true;
+	bIsInteracting = false;
 	bStartWithHighlightedActor = true;
 	bEnableHighlightEffects = true;
 	Mesh = nullptr;
@@ -51,7 +52,7 @@ void UInteractableComponent::ActivateInteractionHighlight() const
 {
 	if (Mesh != nullptr)
 	{
-		Mesh->CustomDepthStencilValue |= (int) EInteractableStencilMask::Highlight;
+		Mesh->CustomDepthStencilValue |= (int)EInteractableStencilMask::Highlight;
 		Mesh->MarkRenderStateDirty();
 	}
 }
@@ -60,7 +61,7 @@ void UInteractableComponent::DeactivateInteractionHighlight() const
 {
 	if (Mesh != nullptr)
 	{
-		Mesh->CustomDepthStencilValue &= ~((int) EInteractableStencilMask::Highlight);
+		Mesh->CustomDepthStencilValue &= ~((int)EInteractableStencilMask::Highlight);
 		Mesh->MarkRenderStateDirty();
 	}
 }
@@ -69,7 +70,7 @@ void UInteractableComponent::ActivateInteractionOutline() const
 {
 	if (Mesh != nullptr)
 	{
-		Mesh->CustomDepthStencilValue |= (int) EInteractableStencilMask::Outline;
+		Mesh->CustomDepthStencilValue |= (int)EInteractableStencilMask::Outline;
 		Mesh->MarkRenderStateDirty();
 	}
 }
@@ -78,7 +79,34 @@ void UInteractableComponent::DeactivateInteractionOutline() const
 {
 	if (Mesh != nullptr)
 	{
-		Mesh->CustomDepthStencilValue &= ~((int) EInteractableStencilMask::Outline);
+		Mesh->CustomDepthStencilValue &= ~((int)EInteractableStencilMask::Outline);
 		Mesh->MarkRenderStateDirty();
 	}
+}
+
+bool UInteractableComponent::BeginInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent)
+{
+	if (!bCanInteract || bIsInteracting)
+	{
+		return false;
+	}
+
+	bIsInteracting = true;
+	DeactivateInteractionOutline();
+	DeactivateInteractionHighlight();
+	ReceiveOnBeginInteraction(Interactor, InteractorComponent);
+	return true;
+}
+
+bool UInteractableComponent::EndInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent)
+{
+	if (!bCanInteract || !bIsInteracting)
+	{
+		return false;
+	}
+
+	bIsInteracting = false;
+	ActivateInteractionHighlight();
+	ReceiveOnEndInteraction(Interactor, InteractorComponent);
+	return true;
 }
