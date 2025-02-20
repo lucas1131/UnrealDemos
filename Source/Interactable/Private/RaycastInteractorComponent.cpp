@@ -52,7 +52,8 @@ void URaycastInteractorComponent::BeginPlay()
 		if (Camera == nullptr)
 		{
 			UE_LOG(LogTemp, Warning,
-			       TEXT("No camera found on '%s', raycast interactor will not work until a camera is assigned."),
+			       TEXT("No camera found on '%s', raycast interactor will not work until a camera is assigned. "
+				       "Trying to use interactor without a camera will cause a crash."),
 			       *GetOwner()->GetName());
 		}
 	}
@@ -90,6 +91,13 @@ void URaycastInteractorComponent::UpdateCachedInteractable(UInteractableComponen
 	OnInteractableUpdated.Execute(InteractableComponent);
 }
 
+void URaycastInteractorComponent::SetRaycastCamera(UCameraComponent* InCamera)
+{
+	this->Camera = InCamera;
+	PrimaryComponentTick.bCanEverTick = this->Camera != nullptr;
+}
+
+/* IInteractorInterface */
 void URaycastInteractorComponent::DoInteractionTest()
 {
 	if (bIsInteracting)
@@ -134,6 +142,7 @@ void URaycastInteractorComponent::DoInteractionTest()
 			return;
 		}
 
+		// TODO check if can be interacted
 		UpdateCachedInteractable(InteractableComponent);
 		DebugPrint(this, Info, FString::Printf(TEXT("Hit actor: %s"), *HitActor->GetName()));
 	}
@@ -175,8 +184,13 @@ void URaycastInteractorComponent::BindOnInteractableUpdatedEvent(const FOnIntera
 	OnInteractableUpdated = Callback;
 }
 
-void URaycastInteractorComponent::SetRaycastCamera(UCameraComponent* InCamera)
+FVector URaycastInteractorComponent::GetHoldInFrontLocation()
 {
-	this->Camera = InCamera;
-	PrimaryComponentTick.bCanEverTick = this->Camera != nullptr;
+	return Camera->GetComponentLocation() + Camera->GetForwardVector() * GetInteractionDistance();
 }
+
+FRotator URaycastInteractorComponent::GetHoldInFrontRotation()
+{
+	return Camera->GetComponentRotation();
+}
+/* End IInteractorInterface */

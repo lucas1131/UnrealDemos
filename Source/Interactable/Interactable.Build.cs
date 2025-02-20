@@ -6,6 +6,6 @@ public class Interactable : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine" });
+		PublicDependencyModuleNames.AddRange(new [] { "Core", "CoreUObject", "Engine" });
 	}
 }

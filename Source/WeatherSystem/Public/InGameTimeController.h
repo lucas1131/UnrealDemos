@@ -34,7 +34,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	AStaticMeshActor* SkyDome;
 	UPROPERTY()
-	UMaterialInstanceDynamic* SkyDomeMaterial;
+	UMaterialInstanceDynamic* SkyDomeMaterial; // TODO this should probably be a TUniquePtr<>
 
 	// CycleSpeed = 1 means realtime (1s IRL == 1ms in game). By default, speed is 60 times faster so 1 second IRL == 1 minute in game.
 	UPROPERTY(EditAnywhere)

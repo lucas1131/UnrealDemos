@@ -21,11 +21,12 @@ public:
 	virtual bool TryBeginInteraction() = 0;
 	UFUNCTION(BlueprintCallable)
 	virtual bool TryEndInteraction() = 0;
-
 	UFUNCTION(BlueprintCallable)
 	virtual void BindOnInteractableUpdatedEvent(const FOnInteractableUpdatedSignature& Callback) = 0;
-
 	UFUNCTION(BlueprintCallable)
 	virtual float GetInteractionDistance() = 0;
-
+	UFUNCTION(BlueprintCallable)
+	virtual FVector GetHoldInFrontLocation() = 0;
+	UFUNCTION(BlueprintCallable)
+	virtual FRotator GetHoldInFrontRotation() = 0;
 };

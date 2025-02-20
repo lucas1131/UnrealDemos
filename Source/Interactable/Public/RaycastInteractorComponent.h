@@ -44,7 +44,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UInteractableComponent* GetCurrentInteractableComponent() const { return CurrentInteractable; }
 
-	/* IInteractable */
+	/* IInteractableInterface */
 	UFUNCTION(BlueprintCallable)
 	virtual bool TryBeginInteraction() override;
 	UFUNCTION(BlueprintCallable)
@@ -53,7 +53,11 @@ public:
 	virtual void BindOnInteractableUpdatedEvent(const FOnInteractableUpdatedSignature& Callback) override;
 	UFUNCTION(BlueprintCallable)
 	virtual float GetInteractionDistance() override { return InteractionDistance; }
-	/* End IInteractable */
+	UFUNCTION(BlueprintCallable)
+	virtual FVector GetHoldInFrontLocation() override;
+	UFUNCTION(BlueprintCallable)
+	virtual FRotator GetHoldInFrontRotation() override;
+	/* End IInteractableInterface */
 
 protected:
 	virtual void BeginPlay() override;

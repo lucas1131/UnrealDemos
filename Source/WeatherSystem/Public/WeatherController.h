@@ -42,7 +42,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UMaterialParameterCollection* GlobalMaterialParams = nullptr;
 	UPROPERTY()
-	UMaterialParameterCollectionInstance* GlobalMaterialParamsInstance = nullptr;
+	UMaterialParameterCollectionInstance* GlobalMaterialParamsInstance = nullptr; // TODO this should probably be a TSharedPtr<>
 	UPROPERTY(EditAnywhere)
 	AExponentialHeightFog* AmbientFog = nullptr;
 	UPROPERTY(EditAnywhere)
@@ -57,6 +57,7 @@ private:
 	float TransitionDuration = 0;
 	float CurrentTransitionTime = 0;
 
+	// TODO these should probably be TSharedPtr<>
 	WeatherTransitionBase* CurrentTransition = nullptr;
 	WeatherTransitionBase* PreviousTransition = nullptr;
 

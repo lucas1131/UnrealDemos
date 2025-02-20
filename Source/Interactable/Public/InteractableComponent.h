@@ -18,7 +18,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Mesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString DisplayDescription;
+	FString InteractionDescription;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCanInteract;
 
@@ -31,14 +31,14 @@ protected:
 	bool bStartWithHighlightedActor;
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsInteracting;
-	
+
 public:
 	UInteractableComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	void EnableHighlightEffects(bool Enabled);
-	FString& GetDisplayDescription() { return DisplayDescription; }
+	FString& GetDisplayDescription() { return InteractionDescription; }
 
 	bool CanInteract() const { return bCanInteract && !bIsInteracting; }
 
@@ -50,16 +50,37 @@ public:
 	void ActivateInteractionOutline() const;
 	UFUNCTION(BlueprintCallable)
 	void DeactivateInteractionOutline() const;
+
+	/* How to deal with different types of interaction
+	 * I can think of two types of interaction here:
+	 * - A FireAndForget type, you trigger an event and forget about the interaction, the object does what it needs to do, and it happens in a single frame (from the interactor perspective)
+	 *    - For example a Collect Item or Push Button just need to trigger something and end interaction automatically, for the interactor it's instantaneous 
+	 * - A type of interaction that needs to happen during multiple frames and need to control the state of the interaction
+	 *    - For example a Grab Object that needs to keep holding and updating de object position every frame until another input ends the interaction, it's not automatic
+	 *
+	 *    |---------------------------|
+	 *    | FireAndForget | HoldState |
+	 *    |---------------------------|
+	 *    | Use/Active    | Grab      |
+	 *    | Collect       | Talk      |
+	 *    | Throw         | Drag      |
+	 *    | Break         | Ride      |
+	 *    |---------------------------|
+	 *    
+	 */
+
+	/* Blueprint events */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, meta=(DisplayName="OnBeginInteraction"))
-	void ReceiveOnBeginInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent);
+	void ReceiveOnBeginInteraction(AActor* Interactor,
+	                               const TScriptInterface<IInteractorInterface>& InteractorComponent);
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, meta=(DisplayName="OnEndInteraction"))
 	void ReceiveOnEndInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent);
 
+	/* Blueprint events entry point */
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="OnBeginInteraction"))
 	bool BeginInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent);
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="OnEndInteraction"))
 	bool EndInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent);
-
 
 protected:
 	virtual void BeginPlay() override;

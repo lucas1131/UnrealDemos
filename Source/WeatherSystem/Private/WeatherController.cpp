@@ -46,7 +46,7 @@ WeatherTransitionBase* AWeatherController::GetWeatherTransitionObject(EWeather W
 	{
 		// delete PreviousTransition;
 	}
-	PreviousTransition = CurrentTransition;
+	PreviousTransition = CurrentTransition; // TODO this is leaking because its not using smart pointers yet
 
 	switch (CurrentWeather)
 	{
