@@ -1,14 +1,18 @@
 ﻿#pragma once
 
-#include "InteractableData.generated.h"
+#include "InteractionData.generated.h"
 
-USTRUCT(BlueprintType)
-struct FInteractableData
+USTRUCT(Blueprintable, BlueprintType)
+struct FInteractionData
 {
 	GENERATED_BODY()
 
-public:
+	UPROPERTY(BlueprintReadWrite, Category="InteractionSystem")
 	bool LeftMouseDown;
+	UPROPERTY(BlueprintReadWrite, Category="InteractionSystem")
 	bool RightMouseDown;
-	FVector2D MouseMovement;
+	UPROPERTY(BlueprintReadWrite, Category="InteractionSystem")
+	FVector2D MouseAxis;
+	UPROPERTY(BlueprintReadWrite, Category="InteractionSystem")
+	float WheelAxis;
 };

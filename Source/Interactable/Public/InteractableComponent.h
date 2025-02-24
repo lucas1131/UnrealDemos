@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IInteractorInterface.h"
+#include "InteractorInterface.h"
 #include "Components/ActorComponent.h"
 #include "InteractableComponent.generated.h"
 
+struct FInteractionData;
 class URaycastInteractorComponent;
 
 UCLASS(Blueprintable, ClassGroup=(InteractableSystem), meta=(BlueprintSpawnableComponent))
@@ -17,10 +18,15 @@ class INTERACTABLE_API UInteractableComponent : public UActorComponent
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Mesh;
+	/* Name or description of the object or action, intended for UI */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString InteractionDescription;
+	/* Is component is allowed to start new interaction, similar to being active */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCanInteract;
+	/* Is component already in the middle of interacting with something else? */
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsInteracting;
 
 	/* Enabling this will enable render custom depth pass for this actor's meshes. This requires Custom Depth to be
 	 * enabled with stencil in project settings. */
@@ -29,8 +35,6 @@ protected:
 	/* Control if it should apply highlight effect to owner actor to how it can be interacted with */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bStartWithHighlightedActor;
-	UPROPERTY(BlueprintReadOnly)
-	bool bIsInteracting;
 
 public:
 	UInteractableComponent();
@@ -75,12 +79,14 @@ public:
 	                               const TScriptInterface<IInteractorInterface>& InteractorComponent);
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, meta=(DisplayName="OnEndInteraction"))
 	void ReceiveOnEndInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent);
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, meta=(DisplayName="OnReceivedData"))
+	void ReceiveOnHandleNewData(const FInteractionData& Data);
 
 	/* Blueprint events entry point */
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="OnBeginInteraction"))
-	bool BeginInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent);
+	void BeginInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent);
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="OnEndInteraction"))
-	bool EndInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent);
+	void EndInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent);
 
 protected:
 	virtual void BeginPlay() override;

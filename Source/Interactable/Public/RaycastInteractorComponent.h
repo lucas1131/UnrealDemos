@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IInteractorInterface.h"
+#include "InteractorInterface.h"
 #include "InteractableComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ActorComponent.h"
@@ -25,13 +25,13 @@ protected:
 	float InteractionRaycastDistance = 200.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InteractionDistance = 150.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsInteracting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FOnInteractableUpdatedSignature OnInteractableUpdated;
 
 private:
+	UPROPERTY()
+	UInteractableComponent* InteractableInRange;
 	UPROPERTY()
 	UInteractableComponent* CurrentInteractable;
 
@@ -50,13 +50,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool TryEndInteraction() override;
 	UFUNCTION(BlueprintCallable)
+	virtual UInteractableComponent* GetCurrentInteractable() override { return CurrentInteractable; }
+	UFUNCTION(BlueprintCallable)
+	virtual void SetCurrentInteractable(UInteractableComponent* Interactable) override;
+	UFUNCTION(BlueprintCallable)
+	virtual void ClearCurrentInteractable() override { CurrentInteractable = nullptr; }
+	UFUNCTION(BlueprintCallable)
+	virtual void SendDataToInteractable(const FInteractionData& Data) override;
+	UFUNCTION(BlueprintCallable)
 	virtual void BindOnInteractableUpdatedEvent(const FOnInteractableUpdatedSignature& Callback) override;
 	UFUNCTION(BlueprintCallable)
 	virtual float GetInteractionDistance() override { return InteractionDistance; }
-	UFUNCTION(BlueprintCallable)
-	virtual FVector GetHoldInFrontLocation() override;
-	UFUNCTION(BlueprintCallable)
-	virtual FRotator GetHoldInFrontRotation() override;
 	/* End IInteractableInterface */
 
 protected:
@@ -64,5 +68,6 @@ protected:
 
 private:
 	void DoInteractionTest();
-	void UpdateCachedInteractable(UInteractableComponent* InteractableComponent);
+	void UpdateInteractableInRange(UInteractableComponent* InteractableComponent);
+	bool IsInteracting() const { return CurrentInteractable != nullptr; }
 };

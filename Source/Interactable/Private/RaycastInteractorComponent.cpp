@@ -38,8 +38,8 @@ URaycastInteractorComponent::URaycastInteractorComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	Camera = nullptr;
 	Debug = false;
+	InteractableInRange = nullptr;
 	CurrentInteractable = nullptr;
-	bIsInteracting = false;
 }
 
 void URaycastInteractorComponent::BeginPlay()
@@ -63,12 +63,19 @@ void URaycastInteractorComponent::TickComponent(float DeltaTime, ELevelTick Tick
                                                 FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	DoInteractionTest();
+	try
+	{
+		DoInteractionTest();
+	}
+	catch (const std::exception& e)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Error: %hs"), e.what());
+	}
 }
 
-void URaycastInteractorComponent::UpdateCachedInteractable(UInteractableComponent* InteractableComponent)
+void URaycastInteractorComponent::UpdateInteractableInRange(UInteractableComponent* InteractableComponent)
 {
-	if (CurrentInteractable == InteractableComponent)
+	if (InteractableInRange == InteractableComponent)
 	{
 		return;
 	}
@@ -76,18 +83,18 @@ void URaycastInteractorComponent::UpdateCachedInteractable(UInteractableComponen
 	if (InteractableComponent == nullptr)
 	{
 		OnInteractableUpdated.Execute(nullptr);
-		CurrentInteractable->DeactivateInteractionOutline();
-		CurrentInteractable = nullptr;
+		InteractableInRange->DeactivateInteractionOutline();
+		InteractableInRange = nullptr;
 		return;
 	}
 
-	if (CurrentInteractable != nullptr)
+	if (InteractableInRange != nullptr)
 	{
-		CurrentInteractable->DeactivateInteractionOutline();
+		InteractableInRange->DeactivateInteractionOutline();
 	}
 
-	CurrentInteractable = InteractableComponent;
-	CurrentInteractable->ActivateInteractionOutline();
+	InteractableInRange = InteractableComponent;
+	InteractableInRange->ActivateInteractionOutline();
 	OnInteractableUpdated.Execute(InteractableComponent);
 }
 
@@ -100,7 +107,7 @@ void URaycastInteractorComponent::SetRaycastCamera(UCameraComponent* InCamera)
 /* IInteractorInterface */
 void URaycastInteractorComponent::DoInteractionTest()
 {
-	if (bIsInteracting)
+	if (IsInteracting())
 	{
 		return;
 	}
@@ -134,49 +141,58 @@ void URaycastInteractorComponent::DoInteractionTest()
 		}
 
 		UInteractableComponent* InteractableComponent = HitActor->GetComponentByClass<UInteractableComponent>();
-		if (InteractableComponent == nullptr)
+		if (InteractableComponent != nullptr && InteractableComponent->CanInteract())
 		{
-			UpdateCachedInteractable(nullptr);
+			UpdateInteractableInRange(InteractableComponent);
+			DebugPrint(this, Info, FString::Printf(TEXT("Hit actor: %s"), *HitActor->GetName()));
+		}
+		else
+		{
+			UpdateInteractableInRange(nullptr);
 			DebugPrint(this, Warning,
 			           FString::Printf(TEXT("Hit non interactable actor: %s"), *HitActor->GetName()));
-			return;
 		}
-
-		// TODO check if can be interacted
-		UpdateCachedInteractable(InteractableComponent);
-		DebugPrint(this, Info, FString::Printf(TEXT("Hit actor: %s"), *HitActor->GetName()));
 	}
 	else
 	{
-		UpdateCachedInteractable(nullptr);
+		UpdateInteractableInRange(nullptr);
 		DebugPrint(this, Error, TEXT("No hits"));
 	}
 }
 
 bool URaycastInteractorComponent::TryBeginInteraction()
 {
-	if (CurrentInteractable != nullptr && CurrentInteractable->BeginInteraction(GetOwner(), this))
+	if (InteractableInRange != nullptr)
 	{
-		bIsInteracting = true;
+		InteractableInRange->BeginInteraction(GetOwner(), this);
 		return true;
 	}
-
-	// TODO need to think a proper way to create, handle, update and clean interface widget, currently the pawn is
-	// controlling the widget and this seems bad design (this is being done in the blueprint) 
 
 	return false;
 }
 
 bool URaycastInteractorComponent::TryEndInteraction()
 {
-	if (CurrentInteractable != nullptr && CurrentInteractable->EndInteraction(GetOwner(), this))
+	if (CurrentInteractable != nullptr)
 	{
-		UpdateCachedInteractable(nullptr);
-		bIsInteracting = false;
+		CurrentInteractable->EndInteraction(GetOwner(), this);
 		return true;
 	}
 
 	return false;
+}
+
+void URaycastInteractorComponent::SetCurrentInteractable(UInteractableComponent* Interactable)
+{
+	CurrentInteractable = Interactable;
+}
+
+void URaycastInteractorComponent::SendDataToInteractable(const FInteractionData& Data)
+{
+	if (IsInteracting())
+	{
+		CurrentInteractable->ReceiveOnHandleNewData(Data);
+	}
 }
 
 void URaycastInteractorComponent::BindOnInteractableUpdatedEvent(const FOnInteractableUpdatedSignature& Callback)
@@ -184,13 +200,4 @@ void URaycastInteractorComponent::BindOnInteractableUpdatedEvent(const FOnIntera
 	OnInteractableUpdated = Callback;
 }
 
-FVector URaycastInteractorComponent::GetHoldInFrontLocation()
-{
-	return Camera->GetComponentLocation() + Camera->GetForwardVector() * GetInteractionDistance();
-}
-
-FRotator URaycastInteractorComponent::GetHoldInFrontRotation()
-{
-	return Camera->GetComponentRotation();
-}
 /* End IInteractorInterface */

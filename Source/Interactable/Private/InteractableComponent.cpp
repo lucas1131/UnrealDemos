@@ -84,29 +84,25 @@ void UInteractableComponent::DeactivateInteractionOutline() const
 	}
 }
 
-bool UInteractableComponent::BeginInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent)
+void UInteractableComponent::BeginInteraction(AActor* Interactor,
+                                              const TScriptInterface<IInteractorInterface>& InteractorComponent)
 {
-	if (!bCanInteract || bIsInteracting)
+	if (bCanInteract && !bIsInteracting)
 	{
-		return false;
+		bIsInteracting = true;
+		DeactivateInteractionOutline();
+		DeactivateInteractionHighlight();
+		ReceiveOnBeginInteraction(Interactor, InteractorComponent);
 	}
-
-	bIsInteracting = true;
-	DeactivateInteractionOutline();
-	DeactivateInteractionHighlight();
-	ReceiveOnBeginInteraction(Interactor, InteractorComponent);
-	return true;
 }
 
-bool UInteractableComponent::EndInteraction(AActor* Interactor, const TScriptInterface<IInteractorInterface>& InteractorComponent)
+void UInteractableComponent::EndInteraction(AActor* Interactor,
+                                            const TScriptInterface<IInteractorInterface>& InteractorComponent)
 {
-	if (!bCanInteract || !bIsInteracting)
+	if (bCanInteract && bIsInteracting)
 	{
-		return false;
+		bIsInteracting = false;
+		ActivateInteractionHighlight();
+		ReceiveOnEndInteraction(Interactor, InteractorComponent);
 	}
-
-	bIsInteracting = false;
-	ActivateInteractionHighlight();
-	ReceiveOnEndInteraction(Interactor, InteractorComponent);
-	return true;
 }

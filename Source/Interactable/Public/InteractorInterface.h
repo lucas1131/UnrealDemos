@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "IInteractorInterface.generated.h"
+#include "InteractorInterface.generated.h"
 
 class UInteractableComponent;
 
@@ -30,7 +30,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void ClearCurrentInteractable() = 0;
 	UFUNCTION(BlueprintCallable)
-	virtual void SendDataToInteractable(const FInteractableData& Data) = 0;
+	virtual void SendDataToInteractable(const FInteractionData& Data) = 0;
 	UFUNCTION(BlueprintCallable)
 	virtual void BindOnInteractableUpdatedEvent(const FOnInteractableUpdatedSignature& Callback) = 0;
 	UFUNCTION(BlueprintCallable)
