@@ -12,11 +12,5 @@ public class DemosEditorTarget : TargetRules
 		ExtraModuleNames.AddRange(new[] { "Demos" });
 		ExtraModuleNames.AddRange(new[] { "WeatherSystem" });
 		ExtraModuleNames.AddRange(new[] { "Interactable" });
-		RegisterModulesCreatedByRider();
-	}
-
-	private void RegisterModulesCreatedByRider()
-	{
-		ExtraModuleNames.AddRange(new string[] { "DebugMenu" });
-	}
+	} 
 }

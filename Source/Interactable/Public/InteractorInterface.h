@@ -4,6 +4,8 @@
 #include "UObject/Interface.h"
 #include "IInteractorInterface.generated.h"
 
+class UInteractableComponent;
+
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnInteractableUpdatedSignature, UInteractableComponent*, InteractableComponent);
 
 UINTERFACE(MinimalAPI, BlueprintType, meta = (CannotImplementInterfaceInBlueprint))
@@ -22,11 +24,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool TryEndInteraction() = 0;
 	UFUNCTION(BlueprintCallable)
+	virtual UInteractableComponent* GetCurrentInteractable() = 0;
+	UFUNCTION(BlueprintCallable)
+	virtual void SetCurrentInteractable(UInteractableComponent* Interactable) = 0;
+	UFUNCTION(BlueprintCallable)
+	virtual void ClearCurrentInteractable() = 0;
+	UFUNCTION(BlueprintCallable)
+	virtual void SendDataToInteractable(const FInteractableData& Data) = 0;
+	UFUNCTION(BlueprintCallable)
 	virtual void BindOnInteractableUpdatedEvent(const FOnInteractableUpdatedSignature& Callback) = 0;
 	UFUNCTION(BlueprintCallable)
 	virtual float GetInteractionDistance() = 0;
-	UFUNCTION(BlueprintCallable)
-	virtual FVector GetHoldInFrontLocation() = 0;
-	UFUNCTION(BlueprintCallable)
-	virtual FRotator GetHoldInFrontRotation() = 0;
 };

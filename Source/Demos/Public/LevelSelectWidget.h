@@ -10,7 +10,7 @@
 UCLASS()
 class DEMOS_API ULevelSelectWidget : public UUserWidget
 {
-	GENERATED_BODY()
+	GENERATED_BODY() 
 
 protected:
 	UPROPERTY(meta=(BindWidget))
