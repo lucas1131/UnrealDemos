@@ -23,8 +23,6 @@ protected:
 	UCameraComponent* Camera;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InteractionRaycastDistance = 200.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InteractionDistance = 150.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FOnInteractableUpdatedSignature OnInteractableUpdated;
@@ -59,8 +57,6 @@ public:
 	virtual void SendDataToInteractable(const FInteractionData& Data) override;
 	UFUNCTION(BlueprintCallable)
 	virtual void BindOnInteractableUpdatedEvent(const FOnInteractableUpdatedSignature& Callback) override;
-	UFUNCTION(BlueprintCallable)
-	virtual float GetInteractionDistance() override { return InteractionDistance; }
 	/* End IInteractableInterface */
 
 protected:

@@ -4,6 +4,7 @@
 #include "UObject/Interface.h"
 #include "InteractorInterface.generated.h"
 
+struct FInteractionData;
 class UInteractableComponent;
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnInteractableUpdatedSignature, UInteractableComponent*, InteractableComponent);
@@ -33,6 +34,4 @@ public:
 	virtual void SendDataToInteractable(const FInteractionData& Data) = 0;
 	UFUNCTION(BlueprintCallable)
 	virtual void BindOnInteractableUpdatedEvent(const FOnInteractableUpdatedSignature& Callback) = 0;
-	UFUNCTION(BlueprintCallable)
-	virtual float GetInteractionDistance() = 0;
 };
