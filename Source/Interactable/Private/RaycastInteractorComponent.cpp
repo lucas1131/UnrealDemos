@@ -198,8 +198,6 @@ void URaycastInteractorComponent::SendDataToInteractable(const FInteractionData&
 void URaycastInteractorComponent::BindOnInteractableUpdatedEvent(const FOnInteractableUpdatedSignature& Callback)
 {
 	OnInteractableUpdated = Callback;
-
-	GetWorld()->GetFirstPlayerController()->GetControlRotation().Vector().RotateAngleAxis()
 }
 
 /* End IInteractorInterface */
