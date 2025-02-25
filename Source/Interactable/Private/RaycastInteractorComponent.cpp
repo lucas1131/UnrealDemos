@@ -176,13 +176,14 @@ bool URaycastInteractorComponent::TryEndInteraction()
 	if (CurrentInteractable != nullptr)
 	{
 		CurrentInteractable->EndInteraction(GetOwner(), this);
+		UpdateInteractableInRange(nullptr);
 		return true;
 	}
 
 	return false;
 }
 
-void URaycastInteractorComponent::SetCurrentInteractable(UInteractableComponent* Interactable)
+void URaycastInteractorComponent::AttachInteractable(UInteractableComponent* Interactable)
 {
 	CurrentInteractable = Interactable;
 }

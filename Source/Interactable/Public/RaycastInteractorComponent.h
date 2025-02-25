@@ -50,9 +50,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual UInteractableComponent* GetCurrentInteractable() override { return CurrentInteractable; }
 	UFUNCTION(BlueprintCallable)
-	virtual void SetCurrentInteractable(UInteractableComponent* Interactable) override;
+	virtual void AttachInteractable(UInteractableComponent* Interactable) override;
 	UFUNCTION(BlueprintCallable)
-	virtual void ClearCurrentInteractable() override { CurrentInteractable = nullptr; }
+	virtual void DetachInteractable() override { CurrentInteractable = nullptr; }
 	UFUNCTION(BlueprintCallable)
 	virtual void SendDataToInteractable(const FInteractionData& Data) override;
 	UFUNCTION(BlueprintCallable)

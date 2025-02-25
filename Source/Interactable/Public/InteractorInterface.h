@@ -27,9 +27,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual UInteractableComponent* GetCurrentInteractable() = 0;
 	UFUNCTION(BlueprintCallable)
-	virtual void SetCurrentInteractable(UInteractableComponent* Interactable) = 0;
+	virtual void AttachInteractable(UInteractableComponent* Interactable) = 0;
 	UFUNCTION(BlueprintCallable)
-	virtual void ClearCurrentInteractable() = 0;
+	virtual void DetachInteractable() = 0;
 	UFUNCTION(BlueprintCallable)
 	virtual void SendDataToInteractable(const FInteractionData& Data) = 0;
 	UFUNCTION(BlueprintCallable)

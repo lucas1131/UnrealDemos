@@ -66,9 +66,9 @@ public:
 	 *    | FireAndForget | HoldState |
 	 *    |---------------------------|
 	 *    | Use/Active    | Grab      |
-	 *    | Collect       | Talk      |
-	 *    | Throw         | Drag      |
-	 *    | Break         | Ride      |
+	 *    | Collect       | Draw      |
+	 *    | Throw         | Ride      |
+	 *    | Break         |           |
 	 *    |---------------------------|
 	 *    
 	 */
