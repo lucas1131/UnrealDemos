@@ -14,6 +14,8 @@ class INTERACTABLE_API URaycastInteractorComponent : public UActorComponent, pub
 {
 	GENERATED_BODY()
 
+	///////////////
+	// Properties
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Debug;
@@ -33,14 +35,14 @@ private:
 	UPROPERTY()
 	UInteractableComponent* CurrentInteractable;
 
+	////////////
+	// Methods
 public:
 	URaycastInteractorComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	UFUNCTION(BlueprintCallable)
 	void SetRaycastCamera(UCameraComponent* InCamera);
-	UFUNCTION(BlueprintCallable)
-	UInteractableComponent* GetCurrentInteractableComponent() const { return CurrentInteractable; }
 
 	/* IInteractableInterface */
 	UFUNCTION(BlueprintCallable)
@@ -49,10 +51,12 @@ public:
 	virtual bool TryEndInteraction() override;
 	UFUNCTION(BlueprintCallable)
 	virtual UInteractableComponent* GetCurrentInteractable() override { return CurrentInteractable; }
+
 	UFUNCTION(BlueprintCallable)
 	virtual void AttachInteractable(UInteractableComponent* Interactable) override;
 	UFUNCTION(BlueprintCallable)
 	virtual void DetachInteractable() override { CurrentInteractable = nullptr; }
+
 	UFUNCTION(BlueprintCallable)
 	virtual void SendDataToInteractable(const FInteractionData& Data) override;
 	UFUNCTION(BlueprintCallable)

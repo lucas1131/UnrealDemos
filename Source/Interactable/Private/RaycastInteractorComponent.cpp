@@ -3,35 +3,6 @@
 #include "RaycastInteractorComponent.h"
 #include "InteractableComponent.h"
 
-enum EDebugPrintLevel
-{
-	Info,
-	Warning,
-	Error
-};
-
-void DebugPrint(const URaycastInteractorComponent* Caller, const EDebugPrintLevel Level, const FString& Message)
-{
-#if not UE_BUILD_SHIPPING
-	if (Caller->Debug)
-	{
-		FColor Color;
-		switch (Level)
-		{
-		case Info:
-			Color = FColor::Cyan;
-			break;
-		case Warning:
-			Color = FColor::Orange;
-			break;
-		case Error:
-			Color = FColor::Red;
-			break;
-		}
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, Color, Message);
-	}
-#endif
-}
 
 URaycastInteractorComponent::URaycastInteractorComponent()
 {
@@ -144,19 +115,15 @@ void URaycastInteractorComponent::DoInteractionTest()
 		if (InteractableComponent != nullptr && InteractableComponent->CanInteract())
 		{
 			UpdateInteractableInRange(InteractableComponent);
-			DebugPrint(this, Info, FString::Printf(TEXT("Hit actor: %s"), *HitActor->GetName()));
 		}
 		else
 		{
 			UpdateInteractableInRange(nullptr);
-			DebugPrint(this, Warning,
-			           FString::Printf(TEXT("Hit non interactable actor: %s"), *HitActor->GetName()));
 		}
 	}
 	else
 	{
 		UpdateInteractableInRange(nullptr);
-		DebugPrint(this, Error, TEXT("No hits"));
 	}
 }
 
