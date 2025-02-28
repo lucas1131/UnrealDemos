@@ -22,6 +22,18 @@ protected:
 	float CurrentTimeSeconds;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	ETimeOfDay TimeOfDay;
+	
+	// CycleSpeed = 1 means realtime (1s IRL == 1ms in game). By default, speed is 60 times faster so 1 second IRL == 1 minute in game.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CycleSpeed = 60.0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float SunriseTimeSeconds = 14400; // 4h
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MorningTimeSeconds = 21600; // 6h
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float SunsetTimeSeconds = 66600; // 18h30m
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float NightTimeSeconds = 72000; // 20h
 
 private:
 	float TickDeltaTime;
@@ -35,18 +47,6 @@ private:
 	AStaticMeshActor* SkyDome;
 	UPROPERTY()
 	UMaterialInstanceDynamic* SkyDomeMaterial; // TODO this should probably be a TUniquePtr<>
-
-	// CycleSpeed = 1 means realtime (1s IRL == 1ms in game). By default, speed is 60 times faster so 1 second IRL == 1 minute in game.
-	UPROPERTY(EditAnywhere)
-	float CycleSpeed = 60.0;
-	UPROPERTY(EditAnywhere)
-	float SunriseTimeSeconds = 14400; // 4h
-	UPROPERTY(EditAnywhere)
-	float MorningTimeSeconds = 21600; // 6h
-	UPROPERTY(EditAnywhere)
-	float SunsetTimeSeconds = 66600; // 18h30m
-	UPROPERTY(EditAnywhere)
-	float NightTimeSeconds = 72000; // 20h
 
 	const float TotalDayTime = 86400.0 - 1.0;
 	float SunriseDurationSeconds;
